@@ -59,6 +59,7 @@ class CompletePurchaseRequest extends AbstractRequest
 
     public function sendData($data)
     {
+        return new CompletePurchaseResponse($this, $data);
     }
 
     private function computedSignature(\DOMDocument $dataDoc, $keyFields)

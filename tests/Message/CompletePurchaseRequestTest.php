@@ -148,4 +148,13 @@ class CompletePurchaseRequestTest extends TestCase
         $this->assertEquals($expected, $data);
     }
 
+    public function testSend()
+    {
+        $result = $this->request->sendData($this->getMockRequest(), $data = ['test' => 1]);
+
+        $this->assertInstanceOf(
+            CompletePurchaseResponse::class,
+            $result
+        );
+    }
 }
