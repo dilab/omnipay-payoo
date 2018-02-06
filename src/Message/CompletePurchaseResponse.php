@@ -9,7 +9,13 @@
 namespace Omnipay\Payoo\Message;
 
 
-class CompletePurchaseResponse
+use Omnipay\Common\Message\AbstractResponse;
+
+class CompletePurchaseResponse extends AbstractResponse
 {
+    public function isSuccessful()
+    {
+        // TODO: Implement isSuccessful() method.
+    }
 
 }

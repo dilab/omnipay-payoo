@@ -12,24 +12,10 @@ use Omnipay\Common\Message\ResponseInterface;
 
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
-
-    protected $productionEndpoint = '';
-
-    protected $sandboxEndpoint = '';
-
     public function getCurrency()
     {
         // only works for VND
         return 'VND';
-    }
-
-    protected function getEndPoint()
-    {
-        if ($this->getTestMode()) {
-            return $this->sandboxEndpoint;
-        }
-
-        return $this->productionEndpoint;
     }
 
     public function getShopDomain()
