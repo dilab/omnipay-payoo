@@ -18,23 +18,6 @@ class CompletePurchaseRequestTest extends TestCase
      */
     public $request;
 
-    public $getQuery = [
-        'session' => 'SS7981',
-        'order_no' => 'ORD77823',
-        'status' => '1',
-        'checksum' => '60a762dc6b241bec39edb7a0484405cd803a363472e26cb5ede9af1db8ce3846463996836'
-    ];
-
-    public $postData = [
-        'NotifyData' => '<?xml version="1.0"?>' .
-            '<PayooConnectionPackage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">' .
-            '<Data>PFBheW1lbnROb3RpZmljYXRpb24+PHNob3BzPjxzaG9wPjxzZXNzaW9uPjE1MDg5MDEzNDc8L3Nlc3Npb24+PHVzZXJuYW1lPmlzc19zaG9wX2NsaWVudDwvdXNlcm5hbWU+PHNob3BfaWQ+NjkxPC9zaG9wX2lkPjxzaG9wX3RpdGxlPnNob3BfY2xpZW50PC9zaG9wX3RpdGxlPjxzaG9wX2RvbWFpbj5odHRwOi8vbG9jYWxob3N0PC9zaG9wX2RvbWFpbj48c2hvcF9iYWNrX3VybD5odHRwOi8vbG9jYWxob3N0OjgwODAvQ2hlY2tzdW1fRGVtb19waHBfdjIvdmVyaWZ5UmVzcG9uc2UucGhwPC9zaG9wX2JhY2tfdXJsPjxvcmRlcl9ubz4xNTA4OTAxMzQ3PC9vcmRlcl9ubz48b3JkZXJfY2FzaF9hbW91bnQ+MTAwMDA8L29yZGVyX2Nhc2hfYW1vdW50PjxvcmRlcl9zaGlwX2RhdGU+MjUvMTAvMjAxNzwvb3JkZXJfc2hpcF9kYXRlPjxvcmRlcl9zaGlwX2RheXM+MTwvb3JkZXJfc2hpcF9kYXlzPjxvcmRlcl9kZXNjcmlwdGlvbj5PcmRlcitObyUzQSslNUIxNTA4OTAxMzQ3JTVELiUzQyUyRmJyJTNFUHJvZHVjdCtpbmZvJTJDK3RyYXZlbCtpbmZvK29yK3NlcnZpY2UraW5mby4uLiUyOGV4JTNBKyUyOSUzQyUyRmJyJTNFTW9uZXkrdG90YWwlM0ErMTAwMDA8L29yZGVyX2Rlc2NyaXB0aW9uPjx2YWxpZGl0eV90aW1lPjIwMTcxMDI2MDUxNTQ3PC92YWxpZGl0eV90aW1lPjxub3RpZnlfdXJsPmh0dHA6Ly8xOTIuMTY4LjExLjMxOjgzMzMvTm90aWZ5TGlzdGVuZXIuYXNweAk8L25vdGlmeV91cmw+PGN1c3RvbWVyPjxuYW1lPk5ndXllbiBWYW4gVmluaDwvbmFtZT48cGhvbmU+MDkwMDExMTExMTwvcGhvbmU+PGFkZHJlc3M+MzUgTmd1eWVuIEh1ZSwgUGh1b25nIEJlbiBOZ2hlLCBRdWFuIDEsIFRwIEhvIENoaSBNaW5oPC9hZGRyZXNzPjxjaXR5PjI0MDAwPC9jaXR5PjxlbWFpbD5lbWFpbEB5YWhvby5jb208L2VtYWlsPjwvY3VzdG9tZXI+PC9zaG9wPjwvc2hvcHM+PFN0YXRlPlBBWU1FTlRfUkVDRUlWRUQ8L1N0YXRlPjxQYXltZW50TWV0aG9kPkVfV0FMTEVUPC9QYXltZW50TWV0aG9kPjwvUGF5bWVudE5vdGlmaWNhdGlvbj4=</Data>' .
-            '<Signature>CB87D58C18E4D6BAE5949D9C21A61C997671D4304CCFF519B82C5E0739453F5780781CEDFD4831885EDD3D7A34EC5E4BB80CCA43B6C45C9FDFB33626BF4F71C5</Signature>' .
-            '<PayooSessionID>WGyCpLu5V2/2L9J9Bn5MBmXG22UNkxbZUoc2ww2BDOWIHly9bKj0clVjEhxWhIJFva+fCDrryu14Do2bH6qUGg==</PayooSessionID>' .
-            '<KeyFields>PaymentMethod|State|Session|BusinessUsername|ShopID|ShopTitle|ShopDomain|ShopBackUrl|OrderNo|OrderCashAmount|StartShippingDate|ShippingDays|OrderDescription|NotifyUrl|PaymentExpireDate</KeyFields>' .
-            '</PayooConnectionPackage>'
-    ];
-
     public function setUp()
     {
         $this->request = new CompletePurchaseRequest($this->getHttpClient(), $this->getHttpRequest());
@@ -63,7 +46,14 @@ class CompletePurchaseRequestTest extends TestCase
 
     public function testPurchaseGet()
     {
-        $this->getHttpRequest()->query->replace($this->getQuery);
+        $getQuery = [
+            'session' => 'SS7981',
+            'order_no' => 'ORD77823',
+            'status' => '1',
+            'checksum' => '60a762dc6b241bec39edb7a0484405cd803a363472e26cb5ede9af1db8ce3846463996836'
+        ];
+
+        $this->getHttpRequest()->query->replace($getQuery);
 
         $data = $this->request->getData();
 
@@ -86,8 +76,76 @@ class CompletePurchaseRequestTest extends TestCase
 
     public function testPurchasePost()
     {
-        $this->getHttpRequest()->request->replace($this->postData);
+        $billingCode = '123456';
+        $orderNo = '1508901347';
+        $orderCashAmount = 10000;
+        $state = 'PAYMENT_RECEIVED';
+        $paymentMethod = 'E_WALLET';
+        $shopId = '691';
+        $paymentExpireDate = '25/10/2017';
+
+        $signature = hash('sha512',
+            $str = (
+                '73b3f5b8efa2c3654b75bf6f5afb76d0' . '|' .
+                $billingCode . '|' .
+                $orderNo . '|' .
+                $orderCashAmount . '|' .
+                $state . '|' .
+                $paymentMethod . '|' .
+                $shopId . '|' .
+                $paymentExpireDate
+            )
+        );
+
+        $keyFields = 'BillingCode|OrderNo|OrderCashAmount|State|PaymentMethod|ShopId|PaymentExpireDate';
+
+        $data = base64_encode('<PaymentNotification>' .
+            '<shops><shop>' .
+            '<session>1508901347</session>' .
+            '<username>iss_shop_client</username><shop_id>691</shop_id><shop_title>shop_client</shop_title>' .
+            '<shop_domain>http://localhost</shop_domain><shop_back_url>http://localhost:8080/Checksum_Demo_php_v2/verifyResponse.php</shop_back_url>' .
+            '<order_no>1508901347</order_no><order_cash_amount>10000</order_cash_amount><order_ship_date>25/10/2017</order_ship_date>' .
+            '<order_ship_days>1</order_ship_days><order_description>10000</order_description><validity_time>20171026051547</validity_time>' .
+            '<notify_url>http://192.168.11.31:8333/NotifyListener.aspx	</notify_url>' .
+            '<customer><name>Nguyen Van Vinh</name>' .
+            '<phone>0900111111</phone><address>35 Nguyen Hue, Phuong Ben Nghe, Quan 1, Tp Ho Chi Minh</address>' .
+            '<city>24000</city><email>email@yahoo.com</email></customer>' .
+            '</shop></shops>' .
+            '<ShopId>' . $shopId . '</ShopId>' .
+            '<BillingCode>' . $billingCode . '</BillingCode>' .
+            '<OrderNo>' . $orderNo . '</OrderNo>' .
+            '<OrderCashAmount>' . $orderCashAmount . '</OrderCashAmount>' .
+            '<State>' . $state . '</State>' .
+            '<PaymentMethod>' . $paymentMethod . '</PaymentMethod>' .
+            '<PaymentExpireDate>' . $paymentExpireDate . '</PaymentExpireDate>' .
+            '</PaymentNotification>'
+        );
+
+
+        $postData = [
+            'NotifyData' => '<?xml version="1.0"?>' .
+                '<PayooConnectionPackage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">' .
+                '<Data>' . $data . '</Data>' .
+                '<Signature>' . $signature . '</Signature>' .
+                '<PayooSessionID>123</PayooSessionID>' .
+                '<KeyFields>' . $keyFields . '</KeyFields>' .
+                '</PayooConnectionPackage>'
+        ];
+
+        $this->getHttpRequest()->setMethod('post');
+
+        $this->getHttpRequest()->request->replace($postData);
+
         $data = $this->request->getData();
+
+        $expected = [
+            'state' => $state,
+            'signature' => $signature,
+            'computed_checksum' => $signature,
+            'method' => 'post'
+        ];
+
+        $this->assertEquals($expected, $data);
     }
 
 }

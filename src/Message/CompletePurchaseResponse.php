@@ -13,6 +13,8 @@ use Omnipay\Common\Message\AbstractResponse;
 
 class CompletePurchaseResponse extends AbstractResponse
 {
+    const STATE_SUCCESS = 'PAYMENT_RECEIVED';
+
     public function isSuccessful()
     {
         // TODO: Implement isSuccessful() method.
