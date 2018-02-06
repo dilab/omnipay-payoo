@@ -62,14 +62,14 @@ class Gateway extends AbstractGateway
         return $this->setParameter('shopId', $shopId);
     }
 
-    public function getApiUserName()
+    public function getApiUsername()
     {
-        return $this->getParameter('apiUserName');
+        return $this->getParameter('apiUsername');
     }
 
-    public function setApiUserName($apiUserName)
+    public function setApiUsername($apiUsername)
     {
-        return $this->setParameter('apiUserName', $apiUserName);
+        return $this->setParameter('apiUsername', $apiUsername);
     }
 
     public function getApiPassword()

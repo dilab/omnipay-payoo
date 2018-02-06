@@ -10,6 +10,7 @@ namespace Omnipay\Payoo\Message;
 
 
 use Cake\Chronos\Chronos;
+use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Tests\TestCase;
 
 class PurchaseRequestTest extends TestCase
@@ -105,5 +106,33 @@ class PurchaseRequestTest extends TestCase
             PurchaseResponse::class,
             $this->request->sendData($data)
         );
+    }
+
+    public function testDescriptionValidation()
+    {
+        $this->request->initialize([
+            'card' => [
+                'firstName' => $firstName = 'Xu',
+                'lastName' => $lastName = 'Ding',
+                'email' => $email = 'xuding@spacebib.com',
+                'number' => $phone = '93804194'
+            ],
+            'description' => $description = '<p>Too short</p>',
+            'amount' => $amount = '10000.00',
+            'returnUrl' => $returnUrl = 'http://localhost:8080/return.php',
+            'notifyUrl' => $notifyUrl = 'http://localhost:8080/notify.php',
+            'transactionId' => $orderNo = 'ORDER-101',
+            'apiUsername' => $username = 'iss_shop_client_BizAPI',
+            'apiPassword' => 'xL0EFyakWD925t8V',
+            'apiSignature' => 'hsiPxtzDUjkfb2iRHhP3JSwgw4uMTJoV16AW3aSPmP36IdeZIwU2Wgmv4AyCd1cQ',
+            'secretKey' => $secretKey = '73b3f5b8efa2c3654b75bf6f5afb76d0',
+            'shopId' => $shopId = '691',
+            'shopTitle' => $shopTitle = 'shop_client',
+            'shopDomain' => $shopDomain = 'http://localhost',
+        ]);
+
+        $this->setExpectedException(InvalidRequestException::class);
+
+        $this->request->getData();
     }
 }

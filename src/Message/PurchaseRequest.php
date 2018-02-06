@@ -10,11 +10,29 @@ namespace Omnipay\Payoo\Message;
 
 
 use Cake\Chronos\Chronos;
+use Omnipay\Common\Exception\InvalidRequestException;
 
 class PurchaseRequest extends AbstractRequest
 {
+    const RULE_DES_MIN_LENGTH = 50;
+
     public function getData()
     {
+        $this->validate(
+            'apiUsername',
+            'secretKey',
+            'shopId',
+            'shopTitle',
+            'shopDomain',
+            'transactionId',
+            'returnUrl',
+            'notifyUrl',
+            'amount',
+            'description'
+        );
+
+        $this->guardDescription();
+
         $orderXml = $this->buildOrderXml();
 
         $secretKey = $this->getSecretKey();
@@ -57,6 +75,13 @@ class PurchaseRequest extends AbstractRequest
             '<email>' . $this->getCard()->getEmail() . '</email>' .
             '</customer>' .
             '</shop></shops>';
+    }
+
+    private function guardDescription()
+    {
+        if (strlen($this->getDescription()) <= self::RULE_DES_MIN_LENGTH) {
+            throw new InvalidRequestException("The description parameter must be larger than 50 characters");
+        }
     }
 
 
