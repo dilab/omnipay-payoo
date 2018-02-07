@@ -23,10 +23,6 @@ And run composer to update your dependencies:
     $ curl -s http://getcomposer.org/installer | php
     $ php composer.phar update
     
-## Support
-This package currently supports following products from Payoo:
-+ [Snap](https://snap-docs.midtrans.com/) via [Window Redirection](https://snap-docs.midtrans.com/#window-redirection)
-
 ## Basic Usage
 
 The following methods are provided by this package:
