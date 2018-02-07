@@ -15,7 +15,8 @@ use Omnipay\Common\Message\RequestInterface;
 
 class CompletePurchaseResponse extends AbstractResponse
 {
-    const STATE_SUCCESS = 'PAYMENT_RECEIVED';
+    const STATE_PAYMENT_RECEIVED = 'PAYMENT_RECEIVED';
+    const STATE_PAYMENT_PROCESSING = 'PAYMENT_PROCESSING';
 
     const STATUS_SUCCESS = 1;
     const STATUS_FAIL = 0;
@@ -24,6 +25,7 @@ class CompletePurchaseResponse extends AbstractResponse
     const RESPONSE_STATUS_SUCCESS = 1;
     const RESPONSE_STATUS_FAIL = 2;
     const RESPONSE_STATUS_CANCEL = 3;
+    const RESPONSE_STATUS_PENDING = 4;
 
     private $responseStatus;
     private $message;
@@ -33,6 +35,11 @@ class CompletePurchaseResponse extends AbstractResponse
         parent::__construct($request, $data);
 
         $this->checkStatus($data);
+    }
+
+    public function isPending()
+    {
+        return $this->responseStatus == self::RESPONSE_STATUS_PENDING;
     }
 
     public function isSuccessful()
@@ -75,7 +82,7 @@ class CompletePurchaseResponse extends AbstractResponse
         }
 
         if (strtolower($data['method']) == strtolower('post')) {
-            $this->handlePostResponse( $data);
+            $this->handlePostResponse($data);
         }
     }
 
@@ -104,5 +111,27 @@ class CompletePurchaseResponse extends AbstractResponse
                 break;
         }
 
+    }
+
+    private function handlePostResponse($data)
+    {
+        if ($data['signature'] != $data['computed_checksum']) {
+            $this->responseStatus = self::RESPONSE_STATUS_FAIL;
+            return;
+        }
+
+        switch ($data['state']) {
+            case self::STATE_PAYMENT_PROCESSING:
+                $this->responseStatus = self::RESPONSE_STATUS_PENDING;
+                $this->message = 'The payment is still in process and it doesn\'t have the final result';
+                break;
+            case self::STATE_PAYMENT_RECEIVED:
+                $this->responseStatus = self::RESPONSE_STATUS_SUCCESS;
+                $this->message = 'Partner order has been paid.';
+                break;
+            default:
+                throw new InvalidResponseException('invalid state string: ' . $data['state']);
+                break;
+        }
     }
 }
