@@ -23,8 +23,6 @@ class Gateway extends AbstractGateway
     {
         return [
             'apiUsername' => '',
-            'apiPassword' => '',
-            'apiSignature' => '',
             'secretKey' => '',
             'shopId' => '',
             'shopTitle' => '',
@@ -72,26 +70,6 @@ class Gateway extends AbstractGateway
         return $this->setParameter('apiUsername', $apiUsername);
     }
 
-    public function getApiPassword()
-    {
-        return $this->getParameter('apiPassword');
-    }
-
-    public function setApiPassword($apiPassword)
-    {
-        return $this->setParameter('apiPassword', $apiPassword);
-    }
-
-    public function getApiSignature()
-    {
-        return $this->getParameter('apiSignature');
-    }
-
-    public function setApiSignature($apiSignature)
-    {
-        return $this->setParameter('apiSignature', $apiSignature);
-    }
-
     public function getSecretKey()
     {
         return $this->getParameter('secretKey');
@@ -111,6 +89,5 @@ class Gateway extends AbstractGateway
     {
         return $this->createRequest('\Omnipay\Payoo\Message\CompletePurchaseRequest', $parameters);
     }
-
 
 }
