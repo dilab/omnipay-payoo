@@ -139,6 +139,7 @@ class CompletePurchaseRequestTest extends TestCase
         $data = $this->request->getData();
 
         $expected = [
+            'order_no' => $orderNo,
             'state' => $state,
             'signature' => $signature,
             'computed_checksum' => $signature,
@@ -150,11 +151,17 @@ class CompletePurchaseRequestTest extends TestCase
 
     public function testSend()
     {
-        $result = $this->request->sendData($this->getMockRequest(), $data = ['test' => 1]);
+        $data = [
+            'session' => 'SS7981',
+            'order_no' => 'ORD77823',
+            'status' => '1',
+            'checksum' => '123',
+            'computed_checksum' => '123',
+            'method' => 'get'
+        ];
 
-        $this->assertInstanceOf(
-            CompletePurchaseResponse::class,
-            $result
-        );
+        $result = $this->request->sendData($data);
+
+        $this->assertInstanceOf(CompletePurchaseResponse::class, $result);
     }
 }

@@ -50,6 +50,7 @@ class CompletePurchaseRequest extends AbstractRequest
         $dataDoc->loadXML($dataDecodedXml);
 
         return [
+            'order_no' => $this->readNodeValue($dataDoc, 'OrderNo'),
             'state' => $this->readNodeValue($dataDoc, 'State'),
             'signature' => $signature,
             'computed_checksum' => $this->computedSignature($dataDoc, $keyFields),
