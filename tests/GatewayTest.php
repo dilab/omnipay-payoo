@@ -13,8 +13,7 @@ use Omnipay\Tests\TestCase;
  */
 
 
-//class GatewayTest extends GatewayTestCase
-class GatewayTest extends TestCase
+class GatewayTest extends GatewayTestCase
 {
     /** @var Gateway */
     protected $gateway;
@@ -24,60 +23,58 @@ class GatewayTest extends TestCase
 
     public function setUp()
     {
-//        parent::setUp();
-//
-//        $this->gateway = new Gateway($this->getHttpClient(), $this->getHttpRequest());
-//
-//        $this->gateway->setMerchantKey('apple');
-//
-//        $this->gateway->setMerchantCode('M00003');
-//
-//        $this->gateway->setBackendUrl('https://www.example.com/backend');
-//
-//        $this->options = [
-//            'card' => [
-//                'firstName' => 'Xu',
-//                'lastName' => 'Ding',
-//                'email' => 'xuding@spacebib.com',
-//                'number' => '93804194'
-//            ],
-//            'amount' => '1.00',
-//            'currency' => 'MYR',
-//            'description' => 'Marina Run 2016',
-//            'transactionId' => '12345',
-//            'returnUrl' => 'https://www.example.com/return',
-//        ];
+        parent::setUp();
+
+        $this->gateway = new Gateway($this->getHttpClient(), $this->getHttpRequest());
+
+        $this->options = [
+            'card' => [
+                'firstName' => $firstName = 'Xu',
+                'lastName' => $lastName = 'Ding',
+                'email' => $email = 'xuding@spacebib.com',
+                'number' => $phone = '93804194'
+            ],
+            'description' => $description = '<p>Thank you for purchasing Marina Run 2018 at StarPodium</p>',
+            'amount' => $amount = '10000.00',
+            'returnUrl' => $returnUrl = 'http://localhost:8080/return.php',
+            'notifyUrl' => $notifyUrl = 'http://localhost:8080/notify.php',
+            'transactionId' => $orderNo = 'ORDER-101',
+            'apiUsername' => $username = 'iss_shop_client_BizAPI',
+            'secretKey' => $secretKey = '73b3f5b8efa2c3654b75bf6f5afb76d0',
+            'shopId' => $shopId = '691',
+            'shopTitle' => $shopTitle = 'shop_client',
+            'shopDomain' => $shopDomain = 'http://localhost',
+        ];
     }
 
     public function testPurchase()
     {
-//        $response = $this->gateway->purchase($this->options)->send();
-//
-//        $this->assertFalse($response->isSuccessful());
-//        $this->assertTrue($response->isRedirect());
+        $response = $this->gateway->purchase($this->options)->send();
+
+        $this->assertFalse($response->isSuccessful());
+
+        $this->assertTrue($response->isRedirect());
     }
 
     public function testCompletePurchase()
     {
-//        $this->getHttpRequest()->request->replace([
-//            'MerchantCode' => 'M00003',
-//            'PaymentId' => 2,
-//            'RefNo' => '12345',
-//            'Amount' => '1.00',
-//            'Currency' => 'MYR',
-//            'Remark' => '100',
-//            'TransId' => '54321',
-//            'AuthCode' => '',
-//            'Status' => 1,
-//            'ErrDesc' => '',
-//            'Signature' => 'a4THdPHQG9jT3DPZZ/mabkXUqow='
-//        ]);
-//
-//        $this->setMockHttpResponse('CompletePurchaseRequestReQuerySuccess.txt');
-//
-//        $response = $this->gateway->completePurchase($this->options)->send();
-//
-//        $this->assertTrue($response->isSuccessful());
-//        $this->assertSame('54321', $response->getTransactionReference());
+        $this->getHttpRequest()->query->replace([
+            'session' => 'SS7981',
+            'order_no' => 'ORD77823',
+            'status' => '1',
+            'checksum' => hash('sha512',
+                '73b3f5b8efa2c3654b75bf6f5afb76d0' .
+                'SS7981' . '.' .
+                'ORD77823' . '.' .
+                '1'
+            )
+        ]);
+
+
+        $response = $this->gateway->completePurchase($this->options)->send();
+
+        $this->assertTrue($response->isSuccessful());
+
+        $this->assertNull($response->getTransactionReference());
     }
 }
