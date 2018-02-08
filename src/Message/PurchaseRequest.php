@@ -52,8 +52,8 @@ class PurchaseRequest extends AbstractRequest
 
     protected function buildOrderXml()
     {
-        $orderShipDate = Chronos::parse('+24 hours')->format('dd/MM/yyyy');
-        $validityTime = Chronos::parse('+24 hours')->format('yyyyMMddHHmmss');
+        $orderShipDate = Chronos::parse('+1 day')->format('d/m/Y');
+        $validityTime = Chronos::parse('+24 hours')->format('YmdHms');
 
         return '<shops><shop>' .
             '<session>' . $this->getTransactionId() . '</session>' .
