@@ -88,7 +88,8 @@ class CompletePurchaseResponse extends AbstractResponse
 
     private function handleGetResponse($data)
     {
-        if ($data['checksum'] != $data['computed_checksum']) {
+        if (strtoupper($data['checksum']) != strtoupper($data['computed_checksum'])) {
+            $this->message = 'The signatures do not match';
             $this->responseStatus = self::RESPONSE_STATUS_FAIL;
             return;
         }
@@ -115,7 +116,8 @@ class CompletePurchaseResponse extends AbstractResponse
 
     private function handlePostResponse($data)
     {
-        if ($data['signature'] != $data['computed_checksum']) {
+
+        if (strtoupper($data['signature']) != strtoupper($data['computed_checksum'])) {
             $this->message = 'The signatures do not match';
             $this->responseStatus = self::RESPONSE_STATUS_FAIL;
             return;

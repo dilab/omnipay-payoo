@@ -25,8 +25,8 @@ class CompletePurchaseResponseTest extends TestCase
             'session' => 'SS7981',
             'order_no' => 'ORD77823',
             'status' => '1',
-            'checksum' => '123',
-            'computed_checksum' => '123',
+            'checksum' => '123ab',
+            'computed_checksum' => '123AB',
             'method' => 'get'
         ];
 
