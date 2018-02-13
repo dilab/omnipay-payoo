@@ -76,61 +76,26 @@ class CompletePurchaseRequestTest extends TestCase
 
     public function testPurchasePost()
     {
-        $billingCode = '123456';
-        $orderNo = '1508901347';
-        $orderCashAmount = 10000;
+        $orderNo = 'sbb-test-359';
         $state = 'PAYMENT_RECEIVED';
-        $paymentMethod = 'E_WALLET';
-        $shopId = '691';
-        $paymentExpireDate = '25/10/2017';
-
-        $signature = hash('sha512',
-            $str = (
-                '73b3f5b8efa2c3654b75bf6f5afb76d0' . '|' .
-                $billingCode . '|' .
-                $orderNo . '|' .
-                $orderCashAmount . '|' .
-                $state . '|' .
-                $paymentMethod . '|' .
-                $shopId . '|' .
-                $paymentExpireDate
-            )
-        );
-
-        $keyFields = 'BillingCode|OrderNo|OrderCashAmount|State|PaymentMethod|ShopId|PaymentExpireDate';
-
-        $data = base64_encode('<PaymentNotification>' .
-            '<shops><shop>' .
-            '<session>1508901347</session>' .
-            '<username>iss_shop_client</username><shop_id>691</shop_id><shop_title>shop_client</shop_title>' .
-            '<shop_domain>http://localhost</shop_domain><shop_back_url>http://localhost:8080/Checksum_Demo_php_v2/verifyResponse.php</shop_back_url>' .
-            '<order_no>1508901347</order_no><order_cash_amount>10000</order_cash_amount><order_ship_date>25/10/2017</order_ship_date>' .
-            '<order_ship_days>1</order_ship_days><order_description>10000</order_description><validity_time>20171026051547</validity_time>' .
-            '<notify_url>http://192.168.11.31:8333/NotifyListener.aspx	</notify_url>' .
-            '<customer><name>Nguyen Van Vinh</name>' .
-            '<phone>0900111111</phone><address>35 Nguyen Hue, Phuong Ben Nghe, Quan 1, Tp Ho Chi Minh</address>' .
-            '<city>24000</city><email>email@yahoo.com</email></customer>' .
-            '</shop></shops>' .
-            '<ShopId>' . $shopId . '</ShopId>' .
-            '<BillingCode>' . $billingCode . '</BillingCode>' .
-            '<OrderNo>' . $orderNo . '</OrderNo>' .
-            '<OrderCashAmount>' . $orderCashAmount . '</OrderCashAmount>' .
-            '<State>' . $state . '</State>' .
-            '<PaymentMethod>' . $paymentMethod . '</PaymentMethod>' .
-            '<PaymentExpireDate>' . $paymentExpireDate . '</PaymentExpireDate>' .
-            '</PaymentNotification>'
-        );
-
+        $signature = '5765046C20D8479C31DEB1751715E88543B7D4B2588C0E1374679FCC32EA5375B3AC1785A4064DC8BCDC70583985240C0BF58B788B17E52D2D2DAE19BD75BE19';
+        $keyFields = 'State|ShopID|OrderNo|OrderCashAmount|ShippingDays|BillingCode';
 
         $postData = [
             'NotifyData' => '<?xml version="1.0"?>' .
                 '<PayooConnectionPackage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">' .
-                '<Data>' . $data . '</Data>' .
+                '<Data>PFBheW1lbnROb3RpZmljYXRpb24+PEJpbGxpbmdDb2RlPjg4ODUxNTk5MjwvQmlsbGluZ0NvZGU+PE9yZGVyTm8+c2JiLXRlc3QtMzU5PC9PcmRlck5vPjxPcmRlckNhc2hBbW91bnQ+MTAwMDA8L09yZGVyQ2FzaEFtb3VudD48U2hvcElkPjc0MTwvU2hvcElkPjxTdGF0ZT5QQVlNRU5UX1JFQ0VJVkVEPC9TdGF0ZT48L1BheW1lbnROb3RpZmljYXRpb24+</Data>' .
                 '<Signature>' . $signature . '</Signature>' .
-                '<PayooSessionID>123</PayooSessionID>' .
+                '<PayooSessionID>HdXEjhpiogNDuK98J4ToxqkoKYlrOTX7uN2sC7o9b6iLF4OzeKI3HSJbwYv94SyPmTkxNoZ93OWAevCcGG0QRg==</PayooSessionID>' .
                 '<KeyFields>' . $keyFields . '</KeyFields>' .
                 '</PayooConnectionPackage>'
         ];
+
+        $this->request->setApiUsername('iss_pulse_active_BizAPI');
+        $this->request->setSecretKey('69c215746ce4209a2e2ede09de9cca87');
+        $this->request->setShopId('741');
+        $this->request->setShopTitle('pulse_active');
+        $this->request->setShopDomain('http://test.sbbhosted.com');
 
         $this->getHttpRequest()->setMethod('post');
 
@@ -142,7 +107,7 @@ class CompletePurchaseRequestTest extends TestCase
             'order_no' => $orderNo,
             'state' => $state,
             'signature' => $signature,
-            'computed_checksum' => $signature,
+            'computed_checksum' => strtolower($signature),
             'method' => 'post'
         ];
 

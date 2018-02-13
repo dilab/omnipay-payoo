@@ -68,7 +68,7 @@ class CompletePurchaseRequest extends AbstractRequest
         $fields = explode('|', $keyFields);
 
         $values = array_map(function ($name) use ($dataDoc) {
-            return $this->readNodeValue($dataDoc, $name);
+            return $this->readNodeValueOfDataDoc($dataDoc, $name);
         }, $fields);
 
         array_unshift($values, $this->getSecretKey());
@@ -76,6 +76,42 @@ class CompletePurchaseRequest extends AbstractRequest
         $str = implode('|', $values);
 
         return hash('sha512', $str);
+    }
+
+    private function readNodeValueOfDataDoc(\DOMDocument $doc, $tagName)
+    {
+        $default = [
+            'PaymentMethod' => "",
+            'State' => "",
+            'Session' => "",
+            'BusinessUsername' => "",
+            'ShopID' => 0,
+            'ShopTitle' => "",
+            'ShopDomain' => "",
+            'ShopBackUrl' => "",
+            'OrderNo' => "",
+            'OrderCashAmount' => 0,
+            'StartShippingDate' => "",
+            'ShippingDays' => 0,
+            'OrderDescription' => "",
+            'NotifyUrl' => "",
+            'BillingCode' => "",
+            'PaymentExpireDate' => "",
+        ];
+
+        $defaultTag = $default[$tagName];
+
+        if ('ShopID' == $tagName) {
+            $tagName = 'ShopId';
+        }
+
+        $readTag = $this->readNodeValue($doc, $tagName);
+
+        if ('' === $readTag) {
+            return $defaultTag;
+        }
+
+        return $readTag;
     }
 
     private function readNodeValue(\DOMDocument $doc, $tagName)
