@@ -74,7 +74,7 @@ class CompletePurchaseRequestTest extends TestCase
         $this->assertSame($expected, $data);
     }
 
-    public function testPurchasePost()
+    public function testPurchasePost_with_billing()
     {
         $orderNo = 'sbb-test-359';
         $state = 'PAYMENT_RECEIVED';
@@ -92,6 +92,47 @@ class CompletePurchaseRequestTest extends TestCase
         ];
 
         $this->request->setApiUsername('iss_pulse_active_BizAPI');
+        $this->request->setSecretKey('69c215746ce4209a2e2ede09de9cca87');
+        $this->request->setShopId('741');
+        $this->request->setShopTitle('pulse_active');
+        $this->request->setShopDomain('http://test.sbbhosted.com');
+
+        $this->getHttpRequest()->setMethod('post');
+
+        $this->getHttpRequest()->request->replace($postData);
+
+        $data = $this->request->getData();
+
+        $expected = [
+            'order_no' => $orderNo,
+            'state' => $state,
+            'signature' => $signature,
+            'computed_checksum' => strtolower($signature),
+            'method' => 'post'
+        ];
+
+        $this->assertEquals($expected, $data);
+    }
+
+    public function testPurchasePost_without_billing()
+    {
+
+        $orderNo = 'sbb-test-367';
+        $state = 'PAYMENT_RECEIVED';
+        $signature = '57B7AF83FF7D5F3AE305A28C467B900871A64DE7C9788F25B0B484944074333F47F191FBFD7084983A0128C40BCB856C9A2A5C329F3A7A154DA5055FD0D32D53';
+        $keyFields = 'PaymentMethod|State|Session|BusinessUsername|ShopID|ShopTitle|ShopDomain|ShopBackUrl|OrderNo|OrderCashAmount|StartShippingDate|ShippingDays|OrderDescription|NotifyUrl|PaymentExpireDate';
+
+        $postData = [
+            'NotifyData' => '<?xml version="1.0"?>' .
+                '<PayooConnectionPackage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">' .
+                '<Data>PFBheW1lbnROb3RpZmljYXRpb24+PHNob3BzPjxzaG9wPjxzZXNzaW9uPnNiYi10ZXN0LTM2Nzwvc2Vzc2lvbj48dXNlcm5hbWU+aXNzX3B1bHNlX2FjdGl2ZTwvdXNlcm5hbWU+PHNob3BfaWQ+NzQxPC9zaG9wX2lkPjxzaG9wX3RpdGxlPnB1bHNlX2FjdGl2ZTwvc2hvcF90aXRsZT48c2hvcF9kb21haW4+aHR0cDovL3Rlc3Quc2JiaG9zdGVkLmNvbTwvc2hvcF9kb21haW4+PHNob3BfYmFja191cmw+aHR0cDovL3Rlc3Quc2JiaG9zdGVkLmNvbS9wYXltZW50cy9jb21wbGV0ZV9wdXJjaGFzZS8zNjcvcGF5b288L3Nob3BfYmFja191cmw+PG9yZGVyX25vPnNiYi10ZXN0LTM2Nzwvb3JkZXJfbm8+PG9yZGVyX2Nhc2hfYW1vdW50PjEwMDAwPC9vcmRlcl9jYXNoX2Ftb3VudD48b3JkZXJfc2hpcF9kYXRlPjIzLzAyLzIwMTg8L29yZGVyX3NoaXBfZGF0ZT48b3JkZXJfc2hpcF9kYXlzPjA8L29yZGVyX3NoaXBfZGF5cz48b3JkZXJfZGVzY3JpcHRpb24+VGhhbmsreW91K2ZvcitwdXJjaGFzaW5nK1Rlc3QrVGVzdCUyQytlbmpveSt0aGlzK3dvbmRlcmZ1bCtldmVudC48L29yZGVyX2Rlc2NyaXB0aW9uPjx2YWxpZGl0eV90aW1lPjIwMTgwMjIzMDMwMjQyPC92YWxpZGl0eV90aW1lPjxub3RpZnlfdXJsPmh0dHA6Ly90ZXN0LnNiYmhvc3RlZC5jb20vcGF5bWVudHMvbm90aWZ5LzM2Ny9wYXlvbzwvbm90aWZ5X3VybD48Y3VzdG9tZXI+PG5hbWU+Y3VzdG9tZXIgdGhlZGlsYWJAZ21haWwuY29tPC9uYW1lPjxwaG9uZT4xMjM0NTY3ODwvcGhvbmU+PGVtYWlsPnRoZWRpbGFiQGdtYWlsLmNvbTwvZW1haWw+PC9jdXN0b21lcj48L3Nob3A+PC9zaG9wcz48U3RhdGU+UEFZTUVOVF9SRUNFSVZFRDwvU3RhdGU+PFBheW1lbnRNZXRob2Q+RV9XQUxMRVQ8L1BheW1lbnRNZXRob2Q+PC9QYXltZW50Tm90aWZpY2F0aW9uPg==</Data>' .
+                '<Signature>' . $signature . '</Signature>' .
+                '<PayooSessionID>WGyCpLu5V2/2L9J9Bn5MBmXG22UNkxbZUoc2ww2BDOWIHly9bKj0clVjEhxWhIJFva+fCDrryu14Do2bH6qUGg==</PayooSessionID>' .
+                '<KeyFields>' . $keyFields . '</KeyFields>' .
+                '</PayooConnectionPackage>'
+        ];
+
+        $this->request->setApiUsername('iss_pulse_active');
         $this->request->setSecretKey('69c215746ce4209a2e2ede09de9cca87');
         $this->request->setShopId('741');
         $this->request->setShopTitle('pulse_active');

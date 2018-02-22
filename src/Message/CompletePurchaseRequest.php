@@ -50,7 +50,9 @@ class CompletePurchaseRequest extends AbstractRequest
         $dataDoc->loadXML($dataDecodedXml);
 
         return [
-            'order_no' => $this->readNodeValue($dataDoc, 'OrderNo'),
+            'order_no' => $this->withBillingCode($dataDoc) ?
+                $this->readNodeValue($dataDoc, 'OrderNo') :
+                $this->readNodeValue($dataDoc, 'order_no'),
             'state' => $this->readNodeValue($dataDoc, 'State'),
             'signature' => $signature,
             'computed_checksum' => $this->computedSignature($dataDoc, $keyFields),
@@ -80,35 +82,37 @@ class CompletePurchaseRequest extends AbstractRequest
 
     private function readNodeValueOfDataDoc(\DOMDocument $doc, $tagName)
     {
+        $withBillingCode = $this->withBillingCode($doc);
+
         $default = [
-            'PaymentMethod' => "",
-            'State' => "",
-            'Session' => "",
-            'BusinessUsername' => "",
+            'PaymentMethod' => '',
+            'State' => '',
+            'Session' => '',
+            'BusinessUsername' => '',
             'ShopID' => 0,
-            'ShopTitle' => "",
-            'ShopDomain' => "",
-            'ShopBackUrl' => "",
-            'OrderNo' => "",
+            'ShopTitle' => '',
+            'ShopDomain' => '',
+            'ShopBackUrl' => '',
+            'OrderNo' => '',
             'OrderCashAmount' => 0,
-            'StartShippingDate' => "",
+            'StartShippingDate' => '',
             'ShippingDays' => 0,
-            'OrderDescription' => "",
-            'NotifyUrl' => "",
-            'BillingCode' => "",
-            'PaymentExpireDate' => "",
+            'OrderDescription' => '',
+            'NotifyUrl' => '',
+            'BillingCode' => '',
+            'PaymentExpireDate' => '',
         ];
 
         $defaultTag = $default[$tagName];
 
-        if ('ShopID' == $tagName) {
-            $tagName = 'ShopId';
-        }
-
-        $readTag = $this->readNodeValue($doc, $tagName);
+        $readTag = $this->readNodeValue($doc, $this->tagNameKey($tagName, $withBillingCode));
 
         if ('' === $readTag) {
             return $defaultTag;
+        }
+
+        if ('OrderDescription' == $tagName) {
+            return urldecode($readTag);
         }
 
         return $readTag;
@@ -127,4 +131,46 @@ class CompletePurchaseRequest extends AbstractRequest
         return $tempNode->nodeValue;
     }
 
+    private function tagNameKey($fieldName, $withBillingCode)
+    {
+        if ($withBillingCode) {
+
+            $map = ['ShopID' => 'ShopId'];
+
+            if (!isset($map[$fieldName])) {
+                return $fieldName;
+            }
+
+            return $map[$fieldName];
+        }
+
+        $map = [
+            'Session' => 'session',
+            'BusinessUsername' => 'username',
+            'ShopID' => 'shop_id',
+            'ShopTitle' => 'shop_title',
+            'ShopDomain' => 'shop_domain',
+            'ShopBackUrl' => 'shop_back_url',
+            'OrderNo' => 'order_no',
+            'OrderCashAmount' => 'order_cash_amount',
+            'StartShippingDate' => 'order_ship_date',
+            'ShippingDays' => 'order_ship_days',
+            'OrderDescription' => 'order_description',
+            'NotifyUrl' => 'notify_url',
+            'State' => 'State',
+            'PaymentMethod' => 'PaymentMethod',
+            'PaymentExpireDate' => 'validity_time',
+        ];
+
+        if (!isset($map[$fieldName])) {
+            return $fieldName;
+        }
+
+        return $map[$fieldName];
+    }
+
+    private function withBillingCode(\DOMDocument $doc)
+    {
+        return ('' != $this->readNodeValue($doc, 'BillingCode'));
+    }
 }
