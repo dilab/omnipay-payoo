@@ -16,6 +16,8 @@ class PurchaseRequest extends AbstractRequest
 {
     const RULE_DES_MIN_LENGTH = 50;
 
+    const TIME_ZONE = 'Asia/Ho_Chi_Minh';
+
     public function getData()
     {
         $this->validate(
@@ -52,8 +54,8 @@ class PurchaseRequest extends AbstractRequest
 
     protected function buildOrderXml()
     {
-        $orderShipDate = Chronos::parse('+1 day')->format('d/m/Y');
-        $validityTime = Chronos::parse('+24 hours')->format('YmdHms');
+        $orderShipDate = Chronos::parse('+1 day', self::TIME_ZONE)->format('d/m/Y');
+        $validityTime = Chronos::parse('+24 hours', self::TIME_ZONE)->format('YmdHms');
 
         return '<shops><shop>' .
             '<session>' . $this->getTransactionId() . '</session>' .

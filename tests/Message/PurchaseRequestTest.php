@@ -62,8 +62,8 @@ class PurchaseRequestTest extends TestCase
         $result = $this->request->getData();
 
         $orderShipDays = 0;
-        $orderShipDate = Chronos::parse('+1 day')->format('d/m/Y');
-        $validityTime = Chronos::parse('+24 hours')->format('YmdHms');
+        $orderShipDate = Chronos::parse('+1 day', PurchaseRequest::TIME_ZONE)->format('d/m/Y');
+        $validityTime = Chronos::parse('+24 hours', PurchaseRequest::TIME_ZONE)->format('YmdHms');
 
         $orderXml =
             '<shops><shop>' .
